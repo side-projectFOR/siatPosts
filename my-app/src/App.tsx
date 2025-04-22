@@ -16,8 +16,8 @@ const App: React.FC = () => (
       <Route path="/boards" element={<BoardListPage />} />
       <Route path="/boards/:slug/posts/:id" element={<PostDetailPage />} />
       <Route path="/boards/:slug/posts/:id/edit" element={<PostEditPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      {/* <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} /> */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </BrowserRouter>
