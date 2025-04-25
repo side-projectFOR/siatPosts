@@ -25,7 +25,7 @@ export const api = createApi({
   endpoints: (builder) => ({
     // 게시글 목록
     getPosts: builder.query<PostsResponse, void>({
-      query: () => `/boards/slugs/posts`,
+      query: () => `/boards`,
       providesTags: (result) =>
         result
           ? [

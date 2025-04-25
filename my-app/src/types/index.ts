@@ -13,11 +13,11 @@ export interface User {
     title: string;  
     content: string;  
     author: User;  
-    category: string;  
+    category: string;  //
     createdAt: string;  
     views: number;  
-    likesCount: number;  
-    likedByUser?: boolean;  
+    likesCount: number;  // 북마크랑 구분하기(북마크 들어갈예정)
+    likedByUser?: boolean;  //추가 예정이라고 하심.
   }
   
   /** 게시글 목록 응답 */  
