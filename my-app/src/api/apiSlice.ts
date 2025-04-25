@@ -14,7 +14,7 @@ import { setCredentials } from '../features/auth/authSlice';
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL ?? '/api',
+    baseUrl: 'http://localhost:80',
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as any).auth.token;
       if (token) headers.set('Authorization', `Bearer ${token}`);
@@ -25,7 +25,7 @@ export const api = createApi({
   endpoints: (builder) => ({
     // 게시글 목록
     getPosts: builder.query<Post[], string>({
-      query: (boardSlug) => `/${boardSlug}/posts`,
+      query: (slug) => `/${slug}/posts`, // (boardSlug) => `/${boardSlug}/posts`,
       providesTags: (result) =>
         result
           ? [
