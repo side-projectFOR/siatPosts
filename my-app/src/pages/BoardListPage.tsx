@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { useGetPostsQuery } from '../api/apiSlice';
 import type { Post } from '../types';
@@ -20,7 +20,14 @@ const Item = styled.li`
 `;
 
 const BoardListPage: React.FC = () => {
-  const { data, isLoading, error } = useGetPostsQuery();
+  const { slug } = useParams(); // /:slug 경로에서 slug 추출
+  const { data, isLoading, error } = useGetPostsQuery(slug || 'free');
+  // useEffect(() => {
+  //   if (error) {
+  //     console.error('Error fetching posts:', error);
+  //   }
+    
+  // }, []);
 
   if (isLoading) return <Container>로딩 중...</Container>;
   if (error || !data) return <Container>게시글을 불러올 수 없습니다.</Container>;
@@ -29,7 +36,7 @@ const BoardListPage: React.FC = () => {
     <Container>
       <Title>게시글 목록</Title>
       <List>
-        {data.posts.map((post: Post) => (
+        {data.map((post: Post) => (
           <Item key={post.id}>
             <Link to={`/boards/${post.category}/posts/${post.id}`}>
               {post.title}

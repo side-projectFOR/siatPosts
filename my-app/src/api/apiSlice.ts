@@ -24,12 +24,12 @@ export const api = createApi({
   tagTypes: ['Post', 'Comment', 'User'],
   endpoints: (builder) => ({
     // 게시글 목록
-    getPosts: builder.query<PostsResponse, void>({
-      query: () => `/boards`,
+    getPosts: builder.query<Post[], string>({
+      query: (boardSlug) => `/${boardSlug}/posts`,
       providesTags: (result) =>
         result
           ? [
-              ...result.posts.map((p) => ({ type: 'Post' as const, id: p.id })),
+              ...result.map((p) => ({ type: 'Post' as const, id: p.id })),
               { type: 'Post', id: 'LIST' }
             ]
           : [{ type: 'Post', id: 'LIST' }]
