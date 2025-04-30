@@ -34,6 +34,8 @@ export const api = createApi({
             ]
           : [{ type: 'Post', id: 'LIST' }]
     }),
+    // 여기서부터 게시글 상세, 작성, 수정, 삭제
+    
     // 게시글 상세
     getPost: builder.query<Post, number>({
       query: (id) => `/boards/slugs/posts/${id}`,
