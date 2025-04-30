@@ -9,10 +9,12 @@ export interface User {
   
   /** 게시글 단건 */  
   export interface Post {  
-    id: number;  
-    title: string;  
-    content: string;  
-    author: User;  
+    postIdx: number;  
+    postTitle: string;  
+    postContent: string;  
+    postAuthor: string; 
+    hit: number;
+    boardIdx: number;  
     category: string;  //
     createdAt: string;  
     views: number;  

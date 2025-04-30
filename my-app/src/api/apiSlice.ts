@@ -29,54 +29,98 @@ export const api = createApi({
       providesTags: (result) =>
         result
           ? [
-              ...result.map((p) => ({ type: 'Post' as const, id: p.id })),
+              ...result.map((p) => ({ type: 'Post' as const, id: p.postIdx })),
               { type: 'Post', id: 'LIST' }
             ]
           : [{ type: 'Post', id: 'LIST' }]
     }),
     // 여기서부터 게시글 상세, 작성, 수정, 삭제
     
-    // 게시글 상세
-    getPost: builder.query<Post, number>({
-      query: (id) => `/boards/slugs/posts/${id}`,
-      providesTags: (_res, _err, id) => [{ type: 'Post', id }]
+    // 게시글 상세 (GET /{boardSlug}/posts/{postIdx})
+    getPost: builder.query<Post, { slug: string; postIdx: number }>({
+      // query: () => `/${"free"}/posts/${1}`,
+      query: ({ slug, postIdx }) => `/${slug}/posts/${postIdx}`,
+      providesTags: (_res, _err, { postIdx }) => [{ type: 'Post', id: postIdx }]
     }),
-    // 새 글 작성
-    createPost: builder.mutation<Post, PostPayload>({
-      query: (body) => ({ url: '/boards/slugs/posts', method: 'POST', body }),
+    // 새 글 작성 (POST /{boardSlug}/posts)
+    createPost: builder.mutation<Post, { slug: string; body: PostPayload }>({
+      query: ({ slug, body }) => ({
+        url: `/${slug}/posts`,
+        method: 'POST',
+        body
+      }),
       invalidatesTags: [{ type: 'Post', id: 'LIST' }]
     }),
-    // 글 수정
-    updatePost: builder.mutation<Post, { id: number; body: PostPayload }>({
-      query: ({ id, body }) => ({
-        url: `/boards/slugs/posts/${id}`,
+    // 글 수정 (PUT /{boardSlug}/posts/{postIdx})
+    updatePost: builder.mutation<Post, { slug: string; postIdx: number; body: PostPayload }>({
+      query: ({ slug, postIdx, body }) => ({
+        url: `/${slug}/posts/${postIdx}`,
         method: 'PUT',
         body
       }),
-      invalidatesTags: (_res, _err, { id }) => [
-        { type: 'Post', id },
+      invalidatesTags: (_res, _err, { postIdx }) => [
+        { type: 'Post', id: postIdx },
         { type: 'Post', id: 'LIST' }
       ]
     }),
-    // 글 삭제
-    deletePost: builder.mutation<{ success: boolean }, number>({
-      query: (id) => ({ url: `/boards/slugs/posts/${id}`, method: 'DELETE' }),
+    // // 글 수정
+    // updatePost: builder.mutation<Post, { id: number; body: PostPayload }>({
+    //   query: ({ id, body }) => ({
+    //     url: `/boards/slugs/posts/${id}`,
+    //     method: 'PUT',
+    //     body
+    //   }),
+    //   invalidatesTags: (_res, _err, { id }) => [
+    //     { type: 'Post', id },
+    //     { type: 'Post', id: 'LIST' }
+    //   ]
+    // }),
+    // // 글 삭제
+    // deletePost: builder.mutation<{ success: boolean }, number>({
+    //   query: (id) => ({ url: `/boards/slugs/posts/${id}`, method: 'DELETE' }),
+    //   invalidatesTags: [{ type: 'Post', id: 'LIST' }]
+    // }),
+    // 글 삭제 (DELETE /{boardSlug}/posts/{postIdx})
+    deletePost: builder.mutation<{ success: boolean }, { slug: string; postIdx: number }>({
+      query: ({ slug, postIdx }) => ({
+        url: `/${slug}/posts/${postIdx}`,
+        method: 'DELETE'
+      }),
       invalidatesTags: [{ type: 'Post', id: 'LIST' }]
     }),
-    // 댓글 목록
-    getComments: builder.query<Comment[], number>({
-      query: (postId) => `/boards/slugs/posts/${postId}/comments`,
-      providesTags: (_res, _err, postId) => [{ type: 'Comment', id: `LIST-${postId}` }]
+    
+    // // 댓글 목록
+    // getComments: builder.query<Comment[], number>({
+    //   query: (postId) => `/boards/slugs/posts/${postId}/comments`,
+    //   providesTags: (_res, _err, postId) => [{ type: 'Comment', id: `LIST-${postId}` }]
+    // }),
+    // 댓글 목록 (GET /{boardSlug}/posts/{postIdx}/comments)
+    getComments: builder.query<Comment[], { slug: string; postIdx: number }>({
+      query: ({ slug, postIdx }) => `/${slug}/posts/${postIdx}/comments`,
+      providesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }]
     }),
-    // 댓글 작성
-    addComment: builder.mutation<Comment, { postId: number; content: string }>({
-      query: ({ postId, content }) => ({
-        url: `/boards/slugs/posts/${postId}/comments`,
+    // // 댓글 작성
+    // addComment: builder.mutation<Comment, { postId: number; content: string }>({
+    //   query: ({ postId, content }) => ({
+    //     url: `/boards/slugs/posts/${postId}/comments`,
+    //     method: 'POST',
+    //     body: { content }
+    //   }),
+    //   invalidatesTags: (_res, _err, { postId }) => [{ type: 'Comment', id: `LIST-${postId}` }]
+    // }),
+    // 댓글 작성 (POST /{boardSlug}/posts/{postIdx}/comments)
+    addComment: builder.mutation<Comment, { slug: string; postIdx: number; content: string }>({
+      query: ({ slug, postIdx, content }) => ({
+        url: `/${slug}/posts/${postIdx}/comments`,
         method: 'POST',
         body: { content }
       }),
-      invalidatesTags: (_res, _err, { postId }) => [{ type: 'Comment', id: `LIST-${postId}` }]
+      invalidatesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }]
     }),
+    // // 회원가입
+    // register: builder.mutation<any, RegisterRequest>({
+    //   query: (body) => ({ url: '/member/insert', method: 'POST', body })
+    // }),
     // 회원가입
     register: builder.mutation<any, RegisterRequest>({
       query: (body) => ({ url: '/member/insert', method: 'POST', body })
