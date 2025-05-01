@@ -28,39 +28,53 @@ const Controls = styled.div`
 
 const PostDetailPage: React.FC = () => {
   const { slug, id } = useParams<{ slug: string; id: string }>();
-  const postId = Number(id);
+  const postIdx = Number(id);
   const navigate = useNavigate();
-  const { data: post, isLoading, error } = useGetPostQuery(postId);
+  const { data: post, isLoading, error } = useGetPostQuery({ slug: slug || 'free', postIdx });
   const [deletePost] = useDeletePostMutation();
   const user = useSelector((s: RootState) => s.auth.user);
-  const isAuthor = Boolean(user && post && user.id === post.author.id);
+  const isAuthor = Boolean(user && post && user.id === post.userIdx);
 
   const onDelete = useCallback(async () => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
-      await deletePost(postId).unwrap();
+      await deletePost({ slug: slug || 'free', postIdx: postIdx }).unwrap();
       navigate('/boards');
     }
-  }, [deletePost, navigate, postId]);
+  }, [deletePost, navigate, postIdx, slug]);
 
   if (isLoading) return <Container>로딩 중...</Container>;
   if (error || !post) return <Container>게시글을 불러올 수 없습니다.</Container>;
 
   return (
     <Container>
-      <Title>{post.title}</Title>
-      <Meta>
-        작성자: {post.author.username} | 조회수: {post.views}
-      </Meta>
-      <Content>{post.content}</Content>
       <Controls>
         <button onClick={() => navigate(-1)}>← 목록</button>
-        {isAuthor && (
+        {/* {isAuthor && (
           <>
-            <Link to={`/boards/${slug}/posts/${postId}/edit`}>수정</Link>
+            <Link to={`/boards/${slug}/posts/${postIdx}/edit`}>수정</Link>
+            <button onClick={onDelete}>삭제</button>
+          </>
+        )} */}
+        {true && (
+          <>
+            <Link to={`/boards/${slug}/posts/${postIdx}/edit`}>수정</Link>
             <button onClick={onDelete}>삭제</button>
           </>
         )}
       </Controls>
+      <Title>{post.postTitle}</Title>
+      <Meta>
+        작성자: {post.postAuthor} | 조회수: {post.hit}
+      </Meta>
+      <Content>작성자: {post.postAuthor} | 조회수: {post.hit}</Content>
+      <Content>작성날짜: {post.updateDate ? post.updateDate+"(수정)" : post.regDate}</Content>
+      
+
+
+      <Content>{post.postContent}</Content>
+      
+      
+      
     </Container>
   );
 };

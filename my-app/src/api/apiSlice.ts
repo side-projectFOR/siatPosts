@@ -81,7 +81,7 @@ export const api = createApi({
     //   invalidatesTags: [{ type: 'Post', id: 'LIST' }]
     // }),
     // 글 삭제 (DELETE /{boardSlug}/posts/{postIdx})
-    deletePost: builder.mutation<{ success: boolean }, { slug: string; postIdx: number }>({
+    deletePost: builder.mutation<{ success: boolean }, { slug: string, postIdx: number }>({
       query: ({ slug, postIdx }) => ({
         url: `/${slug}/posts/${postIdx}`,
         method: 'DELETE'
