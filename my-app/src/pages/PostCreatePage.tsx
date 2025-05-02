@@ -6,10 +6,12 @@ const PostCreatePage: React.FC = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        const authors = ['길동이', 'string', 'JD'];
+        const randomAuthor = authors[Math.floor(Math.random() * authors.length)];
         const newPost = {
-            title,
-            content,
-            createdAt: new Date(),
+            postAuthor: randomAuthor,
+            postTitle: title,
+            postContent: content,
         };
         console.log('Post Created:', newPost);
         // Add logic to send `newPost` to the server or state management

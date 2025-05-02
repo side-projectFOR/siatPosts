@@ -53,9 +53,13 @@ export interface PostsResponse {
   total?: number;  
 }
 
+
 /** 게시글 생성·수정 요청 => 생성 수정 따로 만들어야겠다. (아직 미반영)*/
 // 게시글 수정 요청 
 export interface PostPayload {  
+  //지금은 일단 수정 생성 통합해서 만들었음.
+  // 나중에 수정하는게 좋을 것 같다. 왜냐하면, 권한을 가지고 이동시켜야하기 때문.
+  userIdx?: number, // 작성자 idx
   postAuthor?: string, // 필요할까? 
   postTitle: string,
   postContent: string,
@@ -66,6 +70,12 @@ export interface PostPayload {
 
 // /** 게시글 생성 요청 */  
 // export interface PostPayload {  
+//   "userIdx": 123,
+//   // "postAuthor": "닉네임",
+//   // "postTitle": "제목",
+//   // "postContent": "글내용",
+//   // "postPassword": "1234",
+//   // "isSecret": false
 //   postAuthor: string,
 //   postTitle: string,
 //   postContent: string,
