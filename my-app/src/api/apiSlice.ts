@@ -26,7 +26,7 @@ export const api = createApi({
   endpoints: (builder) => ({
     // 게시글 목록
     getPosts: builder.query<Post[], string>({
-      query: (slug) => `/${slug}/posts`, // (boardSlug) => `/${boardSlug}/posts`,
+      query: (slug) => `/${slug}/posts`,
       providesTags: (result) =>
         result
           ? [
@@ -39,7 +39,6 @@ export const api = createApi({
     
     // 게시글 상세 (GET /{boardSlug}/posts/{postIdx})
     getPost: builder.query<Post, { slug: string; postIdx: number }>({
-      // query: () => `/${"free"}/posts/${1}`,
       query: ({ slug, postIdx }) => `/${slug}/posts/${postIdx}`,
       providesTags: (_res, _err, { postIdx }) => [{ type: 'Post', id: postIdx }]
     }),
@@ -64,23 +63,6 @@ export const api = createApi({
         { type: 'Post', id: 'LIST' }
       ]
     }),
-    // // 글 수정
-    // updatePost: builder.mutation<Post, { id: number; body: PostPayload }>({
-    //   query: ({ id, body }) => ({
-    //     url: `/boards/slugs/posts/${id}`,
-    //     method: 'PUT',
-    //     body
-    //   }),
-    //   invalidatesTags: (_res, _err, { id }) => [
-    //     { type: 'Post', id },
-    //     { type: 'Post', id: 'LIST' }
-    //   ]
-    // }),
-    // // 글 삭제
-    // deletePost: builder.mutation<{ success: boolean }, number>({
-    //   query: (id) => ({ url: `/boards/slugs/posts/${id}`, method: 'DELETE' }),
-    //   invalidatesTags: [{ type: 'Post', id: 'LIST' }]
-    // }),
     // 글 삭제 (DELETE /{boardSlug}/posts/{postIdx})
     deletePost: builder.mutation<{ success: boolean }, { slug: string, postIdx: number }>({
       query: ({ slug, postIdx }) => ({
@@ -90,25 +72,11 @@ export const api = createApi({
       invalidatesTags: [{ type: 'Post', id: 'LIST' }]
     }),
     
-    // // 댓글 목록
-    // getComments: builder.query<Comment[], number>({
-    //   query: (postId) => `/boards/slugs/posts/${postId}/comments`,
-    //   providesTags: (_res, _err, postId) => [{ type: 'Comment', id: `LIST-${postId}` }]
-    // }),
     // 댓글 목록 (GET /{boardSlug}/posts/{postIdx}/comments)
     getComments: builder.query<Comment[], { slug: string; postIdx: number }>({
       query: ({ slug, postIdx }) => `/${slug}/posts/${postIdx}/comments`,
       providesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }]
     }),
-    // // 댓글 작성
-    // addComment: builder.mutation<Comment, { postId: number; content: string }>({
-    //   query: ({ postId, content }) => ({
-    //     url: `/boards/slugs/posts/${postId}/comments`,
-    //     method: 'POST',
-    //     body: { content }
-    //   }),
-    //   invalidatesTags: (_res, _err, { postId }) => [{ type: 'Comment', id: `LIST-${postId}` }]
-    // }),
     // 댓글 작성 (POST /{boardSlug}/posts/{postIdx}/comments)
     addComment: builder.mutation<Comment, { slug: string; postIdx: number; content: string }>({
       query: ({ slug, postIdx, content }) => ({
@@ -118,10 +86,6 @@ export const api = createApi({
       }),
       invalidatesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }]
     }),
-    // // 회원가입
-    // register: builder.mutation<any, RegisterRequest>({
-    //   query: (body) => ({ url: '/member/insert', method: 'POST', body })
-    // }),
     // 회원가입
     register: builder.mutation<any, RegisterRequest>({
       query: (body) => ({ url: '/member/insert', method: 'POST', body })

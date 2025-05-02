@@ -48,16 +48,10 @@ const PostDetailPage: React.FC = () => {
   return (
     <Container>
       <Controls>
-        <button onClick={() => navigate(-1)}>← 목록</button>
-        {/* {isAuthor && (
-          <>
-            <Link to={`/boards/${slug}/posts/${postIdx}/edit`}>수정</Link>
-            <button onClick={onDelete}>삭제</button>
-          </>
-        )} */}
+        <button onClick={() => navigate(`/boards/${slug || 'free'}/posts`)}>← 목록</button>
         {true && (
           <>
-            <Link to={`/boards/${slug}/posts/${postIdx}/edit`}>수정</Link>
+            <Link to={`/boards/${slug || 'free'}/posts/${postIdx}/edit`}>수정</Link>
             <button onClick={onDelete}>삭제</button>
           </>
         )}
