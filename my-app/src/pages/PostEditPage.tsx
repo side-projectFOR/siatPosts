@@ -1,108 +1,4 @@
-// import React, { useState, useEffect } from 'react';
-// import { useParams, useNavigate } from 'react-router-dom';
-// import styled from 'styled-components';
-// import {
-//   useGetPostQuery,
-//   useCreatePostMutation,
-//   useUpdatePostMutation
-// } from '../api/apiSlice';
-// import type { PostPayload } from '../types';
-
-// const Container = styled.div`
-//   padding: ${({ theme }) => theme.spacing.lg};
-// `;
-// const Form = styled.form`
-//   display: flex;
-//   flex-direction: column;
-//   gap: ${({ theme }) => theme.spacing.md};
-// `;
-// const Input = styled.input`
-//   padding: ${({ theme }) => theme.spacing.sm};
-//   border: 1px solid ${({ theme }) => theme.colors.border};
-//   border-radius: ${({ theme }) => theme.radius.sm};
-// `;
-// const TextArea = styled.textarea`
-//   padding: ${({ theme }) => theme.spacing.sm};
-//   border: 1px solid ${({ theme }) => theme.colors.border};
-//   border-radius: ${({ theme }) => theme.radius.sm};
-// `;
-// const Button = styled.button`
-//   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-//   background-color: ${({ theme }) => theme.colors.primary};
-//   color: white;
-//   border: none;
-//   border-radius: ${({ theme }) => theme.radius.sm};
-//   cursor: pointer;
-// `;
-
-// const PostEditPage: React.FC = () => {
-//   const { slug, id } = useParams<{ slug: string; id?: string }>();
-//   const postId = id ? Number(id) : undefined;
-//   const isEdit = Boolean(postId);
-//   const navigate = useNavigate();
-
-//   const { data: existing } = useGetPostQuery(postId!, { skip: !isEdit });
-//   const [createPost] = useCreatePostMutation();
-//   const [updatePost] = useUpdatePostMutation();
-
-//   const [title, setTitle] = useState('');
-//   const [content, setContent] = useState('');
-//   const [category, setCategory] = useState(slug || 'general');
-
-//   useEffect(() => {
-//     if (existing) {
-//       setTitle(existing.title);
-//       setContent(existing.content);
-//       setCategory(slug!);
-//     }
-//   }, [existing, slug]);
-
-//   const onSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     const payload: PostPayload = { title, content, category };
-//     if (isEdit && postId) {
-//       await updatePost({ id: postId, body: payload }).unwrap();
-//       navigate(`/boards/${slug}/posts/${postId}`);
-//     } else {
-//       const post = await createPost(payload).unwrap();
-//       navigate(`/boards/${slug}/posts/${post.id}`);
-//     }
-//   };
-
-//   return (
-//     <Container>
-//       <h2>{isEdit ? '게시글 수정' : '새 게시글 작성'}</h2>
-//       <Form onSubmit={onSubmit}>
-//         <Input
-//           type="text"
-//           placeholder="제목"
-//           value={title}
-//           onChange={(e) => setTitle(e.target.value)}
-//           required
-//         />
-//         <select value={category} onChange={(e) => setCategory(e.target.value)}>
-//           <option value="dev">개발</option>
-//           <option value="qna">Q&A</option>
-//           <option value="thoughts">생각</option>
-//         </select>
-//         <TextArea
-//           rows={10}
-//           placeholder="내용"
-//           value={content}
-//           onChange={(e) => setContent(e.target.value)}
-//           required
-//         />
-//         <Button type="submit">
-//           {isEdit ? '수정 완료' : '작성 완료'}
-//         </Button>
-//       </Form>
-//     </Container>
-//   );
-// };
-
-// export default PostEditPage;
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import {
@@ -111,32 +7,118 @@ import {
   useUpdatePostMutation
 } from '../api/apiSlice';
 import type { PostPayload } from '../types';
+import { BOARD_LIST } from '../types';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import ErrorMessage from '../components/common/ErrorMessage';
 
 const Container = styled.div`
-  padding: ${({ theme }) => theme.spacing.lg};
+  max-width: 800px;
+  margin: 0 auto;
+  padding: ${({ theme }) => theme.spacing.xl};
+  
+  ${({ theme }) => theme.mediaQueries.tablet} {
+    padding: ${({ theme }) => theme.spacing.lg};
+  }
 `;
+
+const Title = styled.h1`
+  font-size: 1.8rem;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.md};
+  background-color: ${({ theme }) => theme.colors.white};
+  border-radius: ${({ theme }) => theme.radius.md};
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+  padding: ${({ theme }) => theme.spacing.lg};
 `;
+
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const Label = styled.label`
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
 const Input = styled.input`
   padding: ${({ theme }) => theme.spacing.sm};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.sm};
+  font-size: 1rem;
+  
+  &:focus {
+    outline: 2px solid ${({ theme }) => theme.colors.primary};
+    border-color: transparent;
+  }
 `;
+
+const Select = styled.select`
+  padding: ${({ theme }) => theme.spacing.sm};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radius.sm};
+  font-size: 1rem;
+  background-color: white;
+  
+  &:focus {
+    outline: 2px solid ${({ theme }) => theme.colors.primary};
+    border-color: transparent;
+  }
+`;
+
 const TextArea = styled.textarea`
   padding: ${({ theme }) => theme.spacing.sm};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radius.sm};
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 300px;
+  font-family: inherit;
+  
+  &:focus {
+    outline: 2px solid ${({ theme }) => theme.colors.primary};
+    border-color: transparent;
+  }
 `;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.md};
+  margin-top: ${({ theme }) => theme.spacing.md};
+`;
+
 const Button = styled.button`
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
   background-color: ${({ theme }) => theme.colors.primary};
   color: white;
   border: none;
   border-radius: ${({ theme }) => theme.radius.sm};
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  font-weight: 500;
   cursor: pointer;
+  
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.secondary};
+  }
+  
+  &:disabled {
+    background-color: ${({ theme }) => theme.colors.textLight};
+    cursor: not-allowed;
+  }
+`;
+
+const CancelButton = styled(Button)`
+  background-color: ${({ theme }) => theme.colors.textLight};
+  
+  &:hover {
+    background-color: #495057;
+  }
 `;
 
 const PostEditPage: React.FC = () => {
@@ -145,87 +127,130 @@ const PostEditPage: React.FC = () => {
   const isEdit = Boolean(postIdx);
   const navigate = useNavigate();
 
-  // 수정: skip을 활용하여 postIdx가 undefined일 때 쿼리 실행 방지
-  const { data: existing } = useGetPostQuery(
+  const { data: existing, isLoading, error } = useGetPostQuery(
     { slug, postIdx: postIdx! }, 
     { skip: !isEdit || !postIdx }
   );
   
-  const [createPost] = useCreatePostMutation();
-  const [updatePost] = useUpdatePostMutation();
+  const [createPost, { isLoading: isCreating }] = useCreatePostMutation();
+  const [updatePost, { isLoading: isUpdating }] = useUpdatePostMutation();
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [category, setCategory] = useState(slug || 'free');
+  const [selectedSlug, setSelectedSlug] = useState(slug);
+  const [author, setAuthor] = useState('');
 
   useEffect(() => {
     if (existing) {
-      // 수정: 응답 필드명 변경 (API 응답 구조에 맞춤)
       setTitle(existing.postTitle || '');
       setContent(existing.postContent || '');
-      setCategory(slug);
+      setAuthor(existing.postAuthor || '');
     }
-  }, [existing, slug]);
+  }, [existing]);
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload: PostPayload = { 
-      // postAuthor?: string, // 필요할까? 
+    
+    const payload: PostPayload = {
       postTitle: title,
       postContent: content,
-      // isSecret?: boolean, // 비밀글 여부
-      // postPassword?: string 
+      postAuthor: author || '익명'
     };
-
-    if (isEdit && postIdx) {
-      // 수정: 올바른 파라미터 전달 (객체 형태)
-      await updatePost({ 
-        slug, 
-        postIdx, 
-        body: payload 
-      }).unwrap();
-      navigate(`/${slug}/posts/${postIdx}`);
-    } else {
-      // 수정: 올바른 파라미터 전달 (객체 형태)
-      const post = await createPost({ 
-        slug, 
-        body: payload 
-      }).unwrap();
-      // 수정: postId → postIdx
-      navigate(`/${slug}/posts/${post.postIdx}`);
+    
+    try {
+      if (isEdit && postIdx) {
+        await updatePost({
+          slug: selectedSlug,
+          postIdx,
+          body: payload
+        }).unwrap();
+        navigate(`/boards/${selectedSlug}/posts/${postIdx}`);
+      } else {
+        const post = await createPost({
+          slug: selectedSlug,
+          body: payload
+        }).unwrap();
+        navigate(`/boards/${selectedSlug}/posts/${post.postIdx}`);
+      }
+    } catch (error) {
+      alert('저장 중 오류가 발생했습니다.');
     }
-  };
+  }, [createPost, updatePost, navigate, isEdit, postIdx, selectedSlug, title, content, author]);
+
+  if (isEdit && isLoading) return <LoadingSpinner />;
+  if (isEdit && (error || !existing)) return <ErrorMessage message="게시글을 불러올 수 없습니다." />;
+
+  const isProcessing = isCreating || isUpdating;
 
   return (
     <Container>
-      <h2>{isEdit ? '게시글 수정' : '새 게시글 작성'}</h2>
+      <Title>{isEdit ? '게시글 수정' : '새 게시글 작성'}</Title>
+      
       <Form onSubmit={onSubmit}>
-        <Input
-          type="text"
-          placeholder="제목"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option value="free">자유</option>
-          <option value="dev">개발</option>
-          <option value="qna">Q&A</option>
-          <option value="thoughts">생각</option>
-        </select>
-        <TextArea
-          rows={10}
-          placeholder="내용"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          required
-        />
-        <Button type="submit">
-          {isEdit ? '수정 완료' : '작성 완료'}
-        </Button>
+        <FormGroup>
+          <Label htmlFor="board">게시판</Label>
+          <Select
+            id="board"
+            value={selectedSlug}
+            onChange={(e) => setSelectedSlug(e.target.value)}
+            disabled={isEdit}
+          >
+            {BOARD_LIST.map((board) => (
+              <option key={board.id} value={board.slug}>
+                {board.name}
+              </option>
+            ))}
+          </Select>
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="title">제목</Label>
+          <Input
+            id="title"
+            type="text"
+            placeholder="제목을 입력하세요"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="author">작성자</Label>
+          <Input
+            id="author"
+            type="text"
+            placeholder="작성자 이름을 입력하세요"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+          />
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="content">내용</Label>
+          <TextArea
+            id="content"
+            placeholder="내용을 입력하세요"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            required
+          />
+        </FormGroup>
+        
+        <ButtonGroup>
+          <Button type="submit" disabled={isProcessing}>
+            {isProcessing ? '저장 중...' : isEdit ? '수정 완료' : '작성 완료'}
+          </Button>
+          <CancelButton
+            type="button"
+            onClick={() => navigate(isEdit ? `/boards/${slug}/posts/${postIdx}` : `/boards/${slug}/posts`)}
+          >
+            취소
+          </CancelButton>
+        </ButtonGroup>
       </Form>
     </Container>
   );
 };
 
-export default PostEditPage;
+export default React.memo(PostEditPage);
