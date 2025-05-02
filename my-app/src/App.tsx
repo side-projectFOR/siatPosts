@@ -15,6 +15,7 @@ const App: React.FC = () => (
       <Routes>
         <Route path="/" element={<Navigate to="/boards" replace />} />
         <Route path="/boards" element={<BoardListPage />} />
+        {/* <Route path="/boards/:slug/posts" element={<BoardListPage />} /> */}
         <Route path="/boards/:slug/posts/:id" element={<PostDetailPage />} />
         <Route path="/boards/:slug/posts/:id/edit" element={<PostEditPage />} />
         <Route path="/boards/:slug/posts/create" element={<PostCreatePage />} />
