@@ -26,7 +26,7 @@ const Controls = styled.div`
   }
 `;
 
-const PostDetailPage: React.FC = () => {
+const PostDetailPage: React.FC = React.memo(() => {
   const { slug, id } = useParams<{ slug: string; id: string }>();
   const postIdx = Number(id);
   const navigate = useNavigate();
@@ -49,13 +49,7 @@ const PostDetailPage: React.FC = () => {
     <Container>
       <Controls>
         <button onClick={() => navigate(-1)}>← 목록</button>
-        {/* {isAuthor && (
-          <>
-            <Link to={`/boards/${slug}/posts/${postIdx}/edit`}>수정</Link>
-            <button onClick={onDelete}>삭제</button>
-          </>
-        )} */}
-        {true && (
+        {isAuthor && (
           <>
             <Link to={`/boards/${slug}/posts/${postIdx}/edit`}>수정</Link>
             <button onClick={onDelete}>삭제</button>
@@ -66,17 +60,10 @@ const PostDetailPage: React.FC = () => {
       <Meta>
         작성자: {post.postAuthor} | 조회수: {post.hit}
       </Meta>
-      <Content>작성자: {post.postAuthor} | 조회수: {post.hit}</Content>
-      <Content>작성날짜: {post.updateDate ? post.updateDate+"(수정)" : post.regDate}</Content>
-      
-
-
+      <Content>작성날짜: {post.updateDate ? `${post.updateDate}(수정)` : post.regDate}</Content>
       <Content>{post.postContent}</Content>
-      
-      
-      
     </Container>
   );
-};
+});
 
 export default PostDetailPage;
