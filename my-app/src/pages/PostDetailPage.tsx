@@ -49,7 +49,7 @@ const PostDetailPage: React.FC = React.memo(() => {
     <Container>
       <Controls>
         <button onClick={() => navigate(-1)}>← 목록</button>
-        {isAuthor && (
+        {true && (
           <>
             <Link to={`/boards/${slug}/posts/${postIdx}/edit`}>수정</Link>
             <button onClick={onDelete}>삭제</button>
