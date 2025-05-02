@@ -170,9 +170,11 @@ const PostEditPage: React.FC = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload: PostPayload = { 
-      title, 
-      content, 
-      category 
+      // postAuthor?: string, // 필요할까? 
+      postTitle: title,
+      postContent: content,
+      // isSecret?: boolean, // 비밀글 여부
+      // postPassword?: string 
     };
 
     if (isEdit && postIdx) {

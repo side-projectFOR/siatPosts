@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import NavBar from './components/NavBar';
-import BoardListPage from './pages/BoardListPage';
+import BoardListPage from './pages/PostListPage';
 import PostDetailPage from './pages/PostDetailPage';
 import PostEditPage from './pages/PostEditPage';
 import LoginPage from './pages/LoginPage';

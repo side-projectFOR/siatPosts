@@ -34,7 +34,9 @@ const BoardListPage: React.FC = () => {
 
   return (
     <Container>
-      <Title>게시글 목록</Title>
+      <Link to={`/boards/${slug}/posts/`}>작성</Link>
+      <Title><small>{`[${slug || '자유게시판'}]의`}</small> 게시글 목록</Title>
+      {/* <Title>게시글 목록</Title> */}
       <List>
         {data.map((post: any) => (
           <Item key={post.postIdx}>

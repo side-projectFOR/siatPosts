@@ -15,6 +15,7 @@ export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:80',
+    responseHandler: 'content-type', // // 응답 헤더의 Content-Type에 따라 자동으로 처리
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as any).auth.token;
       if (token) headers.set('Authorization', `Bearer ${token}`);

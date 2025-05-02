@@ -53,12 +53,25 @@ export interface PostsResponse {
   total?: number;  
 }
 
-/** 게시글 생성·수정 요청 */  
+/** 게시글 생성·수정 요청 => 생성 수정 따로 만들어야겠다. (아직 미반영)*/
+// 게시글 수정 요청 
 export interface PostPayload {  
-  title: string;  
-  content: string;  
-  category: string;  
+  postAuthor?: string, // 필요할까? 
+  postTitle: string,
+  postContent: string,
+  isSecret?: boolean, // 비밀글 여부
+  postPassword?: string 
 }
+
+
+// /** 게시글 생성 요청 */  
+// export interface PostPayload {  
+//   postAuthor: string,
+//   postTitle: string,
+//   postContent: string,
+//   isSecret: boolean, // 비밀글 여부
+//   postPassword: string 
+// }
 
 /** 댓글 */  
 export interface Comment {  
