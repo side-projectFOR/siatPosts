@@ -154,23 +154,27 @@ const PostEditPage: React.FC = () => {
     const payload: PostPayload = {
       postTitle: title,
       postContent: content,
-      postAuthor: author || '익명'
+      postAuthor: author || '익명',
+      isSecret: false // 비밀 게시글 입력 버튼이 필요하다.
     };
     
     try {
       if (isEdit && postIdx) {
-        await updatePost({
+        const re = await updatePost({
           slug: selectedSlug,
           postIdx,
           body: payload
-        }).unwrap();
-        navigate(`/boards/${selectedSlug}/posts/${postIdx}`);
+        }).unwrap(); // 근데 얘는 왜 응답값을 안받지? -> unwrap()을 사용하면 Promise를 반환하고, 성공 시에는 응답값을 반환함.
+        console.log('Post Updated:', payload);
+        console.log('Post response value check~! Updated:', re);
+        // navigate(`/boards/${selectedSlug}/posts/${postIdx}`);
       } else {
         const post = await createPost({
           slug: selectedSlug,
           body: payload
         }).unwrap();
-        navigate(`/boards/${selectedSlug}/posts/${post.postIdx}`);
+        console.log('Post Created:', post);
+        // navigate(`/boards/${selectedSlug}/posts/${post.postIdx}`);
       }
     } catch (error) {
       alert('저장 중 오류가 발생했습니다.');

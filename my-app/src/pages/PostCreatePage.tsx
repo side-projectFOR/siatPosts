@@ -142,6 +142,7 @@ const PostCreatePage: React.FC = () => {
           postTitle: title,
           postContent: content,
           postAuthor: author || '익명',
+          isSecret: false, // 비밀 게시글 입력 버튼이 필요하다.
         }
       }).unwrap();
       

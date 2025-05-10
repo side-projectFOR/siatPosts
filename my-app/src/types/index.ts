@@ -26,6 +26,7 @@ export interface PostPayload {
   postContent: string;  
   postAuthor?: string;
   boardSlug?: string;
+  isSecret?: boolean;
 }
 
 /** 댓글 */  
