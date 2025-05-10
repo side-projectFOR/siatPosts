@@ -7,19 +7,19 @@ import { motion } from 'framer-motion';
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing.xl};
+  padding: ${({ theme }) => theme.spacing.lg};
   
-  ${({ theme }) => theme.mediaQueries.tablet} {
-    padding: ${({ theme }) => theme.spacing.lg};
+  ${({ theme }) => theme.mediaQueries.md} {
+    padding: ${({ theme }) => theme.spacing.md};
   }
 `;
 
 const Title = styled.h1`
   font-size: 2.5rem;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
   text-align: center;
   
-  ${({ theme }) => theme.mediaQueries.mobile} {
+  ${({ theme }) => theme.mediaQueries.sm} {
     font-size: 2rem;
   }
 `;
@@ -32,7 +32,7 @@ const BoardGrid = styled.div`
 
 const BoardCard = styled(motion.div)`
   background-color: ${({ theme }) => theme.colors.white};
-  border-radius: ${({ theme }) => theme.radius.md};
+  border-radius: ${({ theme }) => theme.radius.sm};
   box-shadow: ${({ theme }) => theme.shadows.sm};
   padding: ${({ theme }) => theme.spacing.lg};
   transition: ${({ theme }) => theme.transition};
