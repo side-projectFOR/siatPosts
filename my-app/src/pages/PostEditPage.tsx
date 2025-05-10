@@ -94,7 +94,26 @@ const ButtonGroup = styled.div`
   margin-top: ${({ theme }) => theme.spacing.md};
 `;
 
-const Button = styled.button`
+// const Button = styled.button`
+//   background-color: ${({ theme }) => theme.colors.primary};
+//   color: white;
+//   border: none;
+//   border-radius: ${({ theme }) => theme.radius.sm};
+//   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+//   font-weight: 500;
+//   cursor: pointer;
+  
+//   &:hover {
+//     background-color: ${({ theme }) => theme.colors.secondary};
+//   }
+  
+//   &:disabled {
+//     background-color: ${({ theme }) => theme.colors.textLight};
+//     cursor: not-allowed;
+//   }
+// `;
+
+const Button = styled.button<{ $isEdit?: boolean }>`
   background-color: ${({ theme }) => theme.colors.primary};
   color: white;
   border: none;
@@ -102,11 +121,11 @@ const Button = styled.button`
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
   font-weight: 500;
   cursor: pointer;
-  
+
   &:hover {
     background-color: ${({ theme }) => theme.colors.secondary};
   }
-  
+
   &:disabled {
     background-color: ${({ theme }) => theme.colors.textLight};
     cursor: not-allowed;
@@ -157,28 +176,49 @@ const PostEditPage: React.FC = () => {
       postAuthor: author || '익명',
       isSecret: false // 비밀 게시글 입력 버튼이 필요하다.
     };
-    
     try {
       if (isEdit && postIdx) {
         const re = await updatePost({
           slug: selectedSlug,
           postIdx,
-          body: payload
-        }).unwrap(); // 근데 얘는 왜 응답값을 안받지? -> unwrap()을 사용하면 Promise를 반환하고, 성공 시에는 응답값을 반환함.
-        console.log('Post Updated:', payload);
-        console.log('Post response value check~! Updated:', re);
-        // navigate(`/boards/${selectedSlug}/posts/${postIdx}`);
+          body: payload,
+        });
+        //.unwrap();
+        console.log('Post Updated:', re);
+        navigate(`/boards/${selectedSlug}/posts/${postIdx}`);
       } else {
         const post = await createPost({
           slug: selectedSlug,
-          body: payload
+          body: payload,
         }).unwrap();
         console.log('Post Created:', post);
-        // navigate(`/boards/${selectedSlug}/posts/${post.postIdx}`);
+        navigate(`/boards/${selectedSlug}/posts/${post.postIdx}`);
       }
     } catch (error) {
       alert('저장 중 오류가 발생했습니다.');
     }
+    
+    // try {
+    //   if (isEdit && postIdx) {
+    //     const re = await updatePost({
+    //       slug: selectedSlug,
+    //       postIdx,
+    //       body: payload
+    //     }).unwrap(); // 근데 얘는 왜 응답값을 안받지? -> unwrap()을 사용하면 Promise를 반환하고, 성공 시에는 응답값을 반환함.
+    //     console.log('Post Updated:', payload);
+    //     console.log('Post response value check~! Updated:', re);
+    //     // navigate(`/boards/${selectedSlug}/posts/${postIdx}`);
+    //   } else {
+    //     const post = await createPost({
+    //       slug: selectedSlug,
+    //       body: payload
+    //     }).unwrap();
+    //     console.log('Post Created:', post);
+    //     // navigate(`/boards/${selectedSlug}/posts/${post.postIdx}`);
+    //   }
+    // } catch (error) {
+    //   alert('저장 중 오류가 발생했습니다.');
+    // }
   }, [createPost, updatePost, navigate, isEdit, postIdx, selectedSlug, title, content, author]);
 
   if (isEdit && isLoading) return <LoadingSpinner />;
