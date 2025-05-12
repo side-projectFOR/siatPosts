@@ -155,14 +155,14 @@ const CommentForm: React.FC<CommentFormProps> = ({
     }
   };
   
-  if (!user) {
-    return (
-      <LoginPrompt>
-        <p>댓글을 작성하려면 로그인이 필요합니다.</p>
-        <Link to="/login">로그인하기</Link>
-      </LoginPrompt>
-    );
-  }
+  // if (!user) {
+  //   return (
+  //     <LoginPrompt>
+  //       <p>댓글을 작성하려면 로그인이 필요합니다.</p>
+  //       <Link to="/login">로그인하기</Link>
+  //     </LoginPrompt>
+  //   );
+  // }
   
   return (
     <FormContainer>

@@ -1414,8 +1414,6 @@ const ListButton = styled.button`
   ${buttonBase}
   background: #111;
   color: #fff;
-  border: 2px solid #4c5cff;
-  box-shadow: 0 2px 0 0 #4c5cff;
   &:hover {
     background: #222;
   }
@@ -1641,13 +1639,15 @@ const PostDetailPage: React.FC = React.memo(() => {
     <>
       <Container>
         <Controls>
-          <ListButton onClick={() => navigate(-1)}>← 목록</ListButton>
+          <ListButton onClick={() => navigate(-1)}>← 뒤로가기</ListButton>
           {(isAuthor || true) && (
             <>
               <EditButton to={`/boards/${slug}/posts/${postIdx}/edit`}>수정</EditButton>
               <DeleteButton onClick={onDeletePost}>삭제</DeleteButton>
             </>
           )}
+          <ListButton onClick={() => navigate(`/boards/${"free"}/posts`)}>← 목록</ListButton>
+
         </Controls>
         <Title>{post.postTitle}</Title>
         <InfoBox>
