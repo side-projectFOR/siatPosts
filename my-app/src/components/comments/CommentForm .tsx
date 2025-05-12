@@ -155,6 +155,7 @@ const CommentForm: React.FC<CommentFormProps> = ({
     }
   };
   
+  /** 무조건 이는 로그인했을때 살려야한다. */
   // if (!user) {
   //   return (
   //     <LoginPrompt>
