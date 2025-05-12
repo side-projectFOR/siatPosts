@@ -88,7 +88,7 @@ export const GlobalStyle = createGlobalStyle`
   }
   
   body {
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'Nanum Gothic', 'Nanum Gothic Coding', sans-serif;
     line-height: 1.5;
     color: ${({ theme }) => theme.colors.text};
     background-color: ${({ theme }) => theme.colors.background};

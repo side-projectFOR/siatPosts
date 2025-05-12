@@ -178,14 +178,32 @@ export const api = createApi({
     }),
     
     // 새 글 작성 (POST /{boardSlug}/posts)
+    // createPost: builder.mutation<Post, { slug: string; body: PostPayload }>({
+    //   query: ({ slug, body }) => ({
+    //     url: `/${slug}/posts`,
+    //     method: 'POST',
+    //     body,
+    //   }),
+    //   invalidatesTags: [{ type: 'Post', id: 'LIST' }],
+    // }),
     createPost: builder.mutation<Post, { slug: string; body: PostPayload }>({
       query: ({ slug, body }) => ({
         url: `/${slug}/posts`,
         method: 'POST',
         body,
+        responseHandler: (response: Response) => response.text(),
       }),
+      transformResponse: (responseText: string): Post => {
+        try {
+          return JSON.parse(responseText);
+        } catch {
+          // 파싱 실패 시 원본 텍스트 반환 (타입 캐스팅 필요)
+          return responseText as unknown as Post;
+        }
+      },
       invalidatesTags: [{ type: 'Post', id: 'LIST' }],
     }),
+
     
     // 글 수정 (PUT /{boardSlug}/posts/{postIdx})
     updatePost: builder.mutation<Post, { slug: string; postIdx: number; body: PostPayload }>({
