@@ -251,7 +251,24 @@ export const api = createApi({
       }),
       invalidatesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
     }),
-    
+    // 댓글 수정 (PUT /{boardSlug}/posts/{postIdx}/comments/{commentIdx})
+    updateComment: builder.mutation<Comment, { slug: string; postIdx: number; commentIdx: number; content: string }>({
+      query: ({ slug, postIdx, commentIdx, content }) => ({
+        url: `/${slug}/posts/${postIdx}/comments/${commentIdx}`,
+        method: 'PUT',
+        body: { commentContent: content },
+      }),
+      invalidatesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
+    }),
+    // 댓글 삭제 (DELETE /{boardSlug}/posts/{postIdx}/comments/{commentIdx})
+    deleteComment: builder.mutation<{ success: boolean }, { slug: string; postIdx: number; commentIdx: number }>({
+      query: ({ slug, postIdx, commentIdx }) => ({
+        url: `/${slug}/posts/${postIdx}/comments/${commentIdx}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
+    }),
+
     // 회원가입
     register: builder.mutation<any, RegisterRequest>({
       query: (body) => ({ url: '/member/insert', method: 'POST', body }),
@@ -282,6 +299,8 @@ export const {
   useDeletePostMutation,
   useGetCommentsQuery,
   useAddCommentMutation,
+  useUpdateCommentMutation,
+  useDeleteCommentMutation,
   useRegisterMutation,
   useLoginMutation,
 } = api;
