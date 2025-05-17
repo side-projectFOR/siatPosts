@@ -293,21 +293,57 @@ export const api = createApi({
     }),
 
     // 댓글 수정 (PUT /{boardSlug}/posts/{postIdx}/comments/{commentIdx})
-    updateComment: builder.mutation<Comment, { slug: string; postIdx: number; commentIdx: number; content: string }>({
-      query: ({ slug, postIdx, commentIdx, content }) => ({
-        url: `/${slug}/posts/${postIdx}/comments/${commentIdx}`,
+    // updateComment: builder.mutation<Comment, { slug: string; postIdx: number; commentIdx: number; content: string }>({
+    //   query: ({ slug, postIdx, commentIdx, content }) => ({
+    //     url: `/${slug}/posts/${postIdx}/comments/${commentIdx}`,
+    //     method: 'PUT',
+    //     body: { commentContent: content },
+    //   }),
+    //   invalidatesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
+    // }),
+    updateComment: builder.mutation<string, { postIdx: number; commentIdx: number; content: string; author: string }>({
+      query: ({ postIdx, commentIdx, content, author }) => ({
+        url: `/${postIdx}/comments/${commentIdx}`,
         method: 'PUT',
-        body: { commentContent: content },
+        body: { 
+          commentIdx: commentIdx,
+          commentContent: content,
+          commentAuthor: author 
+        },
+        responseHandler: (response) => response.text(),
       }),
-      invalidatesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
+      transformResponse: (response: string) => {
+        if (response !== '수정성공') {
+          throw new Error('댓글 수정에 실패했습니다.');
+        }
+        return response;
+      },
+      invalidatesTags: (result, error, { commentIdx }) => 
+        [{ type: 'Comment', id: commentIdx }]
     }),
+
     // 댓글 삭제 (DELETE /{boardSlug}/posts/{postIdx}/comments/{commentIdx})
-    deleteComment: builder.mutation<{ success: boolean }, { slug: string; postIdx: number; commentIdx: number }>({
-      query: ({ slug, postIdx, commentIdx }) => ({
-        url: `/${slug}/posts/${postIdx}/comments/${commentIdx}`,
+    // deleteComment: builder.mutation<{ success: boolean }, { slug: string; postIdx: number; commentIdx: number }>({
+    //   query: ({ slug, postIdx, commentIdx }) => ({
+    //     url: `/${slug}/posts/${postIdx}/comments/${commentIdx}`,
+    //     method: 'DELETE',
+    //   }),
+    //   invalidatesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
+    // }),
+    deleteComment: builder.mutation<string, { postIdx: number; commentIdx: number }>({
+      query: ({ postIdx, commentIdx }) => ({
+        url: `/${postIdx}/comments/${commentIdx}`,
         method: 'DELETE',
+        responseHandler: (response) => response.text(),
       }),
-      invalidatesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
+      transformResponse: (response: string) => {
+        if (response !== '삭제성공') {
+          throw new Error('댓글 삭제에 실패했습니다.');
+        }
+        return response;
+      },
+      invalidatesTags: (result, error, { postIdx }) => 
+        [{ type: 'Comment', id: `LIST-${postIdx}` }]
     }),
 
     // 회원가입

@@ -1608,10 +1608,10 @@ const PostDetailPage: React.FC = React.memo(() => {
   const handleUpdateComment = async (commentIdx: number, content: string) => {
     try {
       await updateComment({ 
-        slug: slug || 'free', 
         postIdx, 
         commentIdx, 
-        content 
+        content, 
+        author: user?.username || '익명'
       }).unwrap();
       showToast('댓글이 수정되었습니다.', 'success');
     } catch (err) {
@@ -1623,7 +1623,6 @@ const PostDetailPage: React.FC = React.memo(() => {
   const handleDeleteComment = async (commentIdx: number) => {
     try {
       await deleteComment({ 
-        slug: slug || 'free', 
         postIdx, 
         commentIdx 
       }).unwrap();
