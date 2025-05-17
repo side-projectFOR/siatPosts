@@ -38,6 +38,17 @@ export interface Comment {
   commentAuthor: string;  
   regDate: string;  
 }
+/** 댓글 */  
+export interface Comment {  
+  // commentIdx: number;  
+  postIdx: number;  
+  userIdx: number;  
+  commentParentIdx: number; // 추가
+  commentContent: string;  
+  commentAuthor: string; 
+  isDelete: number; 
+  // regDate: string;  
+}
 
 /** 로그인 요청 */  
 export interface LoginRequest {  

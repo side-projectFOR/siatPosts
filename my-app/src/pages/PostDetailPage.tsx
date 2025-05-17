@@ -1639,14 +1639,14 @@ const PostDetailPage: React.FC = React.memo(() => {
     <>
       <Container>
         <Controls>
-          <ListButton onClick={() => navigate(-1)}>← 뒤로가기</ListButton>
+          <ListButton onClick={() => navigate(-1)}>←</ListButton>
           {(isAuthor || true) && (
             <>
               <EditButton to={`/boards/${slug}/posts/${postIdx}/edit`}>수정</EditButton>
               <DeleteButton onClick={onDeletePost}>삭제</DeleteButton>
             </>
           )}
-          <ListButton onClick={() => navigate(`/boards/${"free"}/posts`)}>← 목록</ListButton>
+          <ListButton onClick={() => navigate(`/boards/${"free"}/posts`)}>목록</ListButton>
 
         </Controls>
         <Title>{post.postTitle}</Title>

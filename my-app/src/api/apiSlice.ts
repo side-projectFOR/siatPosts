@@ -237,16 +237,20 @@ export const api = createApi({
     }),
     
     // 댓글 목록 (GET /{boardSlug}/posts/{postIdx}/comments)
+    // 댓글 목록 (POST /{postIdx}/comments)
     getComments: builder.query<Comment[], { slug: string; postIdx: number }>({
       query: ({ slug, postIdx }) => `/${slug}/posts/${postIdx}/comments`,
       providesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
     }),
     
     // 댓글 작성 (POST /{boardSlug}/posts/{postIdx}/comments)
+    // 댓글 작성 ㅍㅍ
     addComment: builder.mutation<Comment, { slug: string; postIdx: number; content: string }>({
       query: ({ slug, postIdx, content }) => ({
-        url: `/${slug}/posts/${postIdx}/comments`,
+        url: `/${postIdx}/comments`,
+        // url: `/${slug}/posts/${postIdx}/comments`,
         method: 'POST',
+        // body: { content },
         body: { content },
       }),
       invalidatesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
