@@ -238,23 +238,60 @@ export const api = createApi({
     
     // 댓글 목록 (GET /{boardSlug}/posts/{postIdx}/comments)
     // 댓글 목록 (POST /{postIdx}/comments)
-    getComments: builder.query<Comment[], { slug: string; postIdx: number }>({
-      query: ({ slug, postIdx }) => `/${slug}/posts/${postIdx}/comments`,
-      providesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
+    // getComments: builder.query<Comment[], { slug: string; postIdx: number }>({
+    //   query: ({ slug, postIdx }) => `/${slug}/posts/${postIdx}/comments`,
+    //   providesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
+    // }),
+    // 댓글 목록 조회 - 수정된 엔드포인트 (/{postIdx}/comments)
+    getComments: builder.query<Comment[], number>({
+      query: (postIdx) => `/${postIdx}/comments`,
+      providesTags: (result, error, postIdx) => 
+        result
+          ? [
+              ...result.map(({ commentIdx }) => ({ type: 'Comment' as const, id: commentIdx })),
+              { type: 'Comment', id: `LIST-${postIdx}` }
+            ]
+          : [{ type: 'Comment', id: `LIST-${postIdx}` }]
     }),
     
     // 댓글 작성 (POST /{boardSlug}/posts/{postIdx}/comments)
     // 댓글 작성 ㅍㅍ
-    addComment: builder.mutation<Comment, { slug: string; postIdx: number; content: string }>({
-      query: ({ slug, postIdx, content }) => ({
+    // addComment: builder.mutation<Comment, { slug: string; postIdx: number; content: string }>({
+    //   query: ({ slug, postIdx, content }) => ({
+    //     url: `/${postIdx}/comments`,
+    //     // url: `/${slug}/posts/${postIdx}/comments`,
+    //     method: 'POST',
+    //     // body: { content },
+    //     body: { content },
+    //   }),
+    //   invalidatesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
+    // }),
+    addComment: builder.mutation<string, { postIdx: number; content: string; author: string }>({
+      query: ({ postIdx, content, author }) => ({
         url: `/${postIdx}/comments`,
-        // url: `/${slug}/posts/${postIdx}/comments`,
         method: 'POST',
-        // body: { content },
-        body: { content },
+        body: { 
+          // 해당 부분도 원래 로그인했을때 필수적으로 받아야한다.
+          userId: 1, // 현재 로그인된 사용자 ID으로 알아서 처리해줘야한다.
+          postIdx: postIdx, // 포스트idx는 알아서 현재 포스트idx를 받아와야지.
+          // 이거는 왜 그렇게 결정되는가? 
+          commentParentIdx: 789, // 부모 댓글 ID (최상위 댓글의 경우)
+          commentContent: content,
+          commentAuthor: author, // 저자는 그냥 현재 사람의 이름을 받아오면 된다.
+          isDelete: 0
+        },
+        responseHandler: (response) => response.text(), // text/plain 응답 처리
       }),
-      invalidatesTags: (_res, _err, { postIdx }) => [{ type: 'Comment', id: `LIST-${postIdx}` }],
+      transformResponse: (response: string) => {
+        if (response === '작성실패') {
+          throw new Error('댓글 작성에 실패했습니다.');
+        }
+        return response;
+      },
+      invalidatesTags: (result, error, { postIdx }) => 
+        [{ type: 'Comment', id: `LIST-${postIdx}` }]
     }),
+
     // 댓글 수정 (PUT /{boardSlug}/posts/{postIdx}/comments/{commentIdx})
     updateComment: builder.mutation<Comment, { slug: string; postIdx: number; commentIdx: number; content: string }>({
       query: ({ slug, postIdx, commentIdx, content }) => ({

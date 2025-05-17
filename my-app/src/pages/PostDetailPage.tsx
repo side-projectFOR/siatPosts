@@ -1568,7 +1568,7 @@ const PostDetailPage: React.FC = React.memo(() => {
   const [deletePost] = useDeletePostMutation();
   
   // 댓글 관련 쿼리와 뮤테이션
-  const { data: comments = [], isLoading: commentsLoading } = useGetCommentsQuery({ slug: slug || 'free', postIdx });
+  const { data: comments = [], isLoading: commentsLoading } = useGetCommentsQuery(postIdx); // { slug: slug || 'free', postIdx }
   const [addComment] = useAddCommentMutation();
   const [updateComment] = useUpdateCommentMutation();
   const [deleteComment] = useDeleteCommentMutation();
@@ -1593,9 +1593,10 @@ const PostDetailPage: React.FC = React.memo(() => {
   const handleAddComment = async (content: string) => {
     try {
       await addComment({ 
-        slug: slug || 'free', 
+        // slug: slug || 'free', 
         postIdx, 
-        content 
+        content,
+        author: user?.username || "익명" // 저자를 추가해줘야한다.
       }).unwrap();
       showToast('댓글이 작성되었습니다.', 'success');
     } catch (err) {

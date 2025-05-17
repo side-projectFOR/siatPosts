@@ -14,10 +14,10 @@ export interface Post {
   postTitle: string;
   postContent: string;
   hit: number;
-  isSecret: boolean;
+  isSecret: boolean; // 
   regDate: string;
-  updateDate: string | null;
-  isDelete: boolean;
+  updateDate?: string;
+  isDelete: boolean; //
 }
 
 /** 게시글 생성·수정 요청 */  
@@ -29,25 +29,25 @@ export interface PostPayload {
   isSecret?: boolean;
 }
 
+// /** 댓글 */  
+// export interface Comment {  
+//   commentIdx: number;  
+//   postIdx: number;  
+//   userIdx: number;  
+//   commentContent: string;  
+//   commentAuthor: string;  
+//   regDate?: string;  
+// }
 /** 댓글 */  
 export interface Comment {  
   commentIdx: number;  
   postIdx: number;  
   userIdx: number;  
-  commentContent: string;  
-  commentAuthor: string;  
-  regDate: string;  
-}
-/** 댓글 */  
-export interface Comment {  
-  // commentIdx: number;  
-  postIdx: number;  
-  userIdx: number;  
   commentParentIdx: number; // 추가
   commentContent: string;  
   commentAuthor: string; 
+  regDate?: string;  
   isDelete: number; 
-  // regDate: string;  
 }
 
 /** 로그인 요청 */  

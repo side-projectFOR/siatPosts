@@ -98,7 +98,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           <CommentAuthor>
             {comment.commentAuthor}
             <CommentDate>
-              {formatDistanceToNow(new Date(comment.regDate), {
+              {comment.regDate && formatDistanceToNow(new Date(comment.regDate), {
                 addSuffix: true,
                 locale: ko,
               })}
